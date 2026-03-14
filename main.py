@@ -100,12 +100,6 @@ def run_mitmproxy():
     if not os.path.isfile(ADDON_SCRIPT):
         raise FileNotFoundError(f"Addon script not found: {ADDON_SCRIPT}")
 
-    # Build mitmproxy command with stealth configuration
-    # Note: To improve SSL stealth further, consider installing the mitmproxy CA certificate
-    # on the target system to avoid detection of the certificate chain being broken.
-    # This is better than ssl_insecure=true for advanced anti-detection systems.
-    
-    # Run mitmdump through sys.executable to prevent Windows execution errors (WinError 193)
     mitm_cmd = [
         sys.executable, MITMDUMP_BIN,
         "-s", ADDON_SCRIPT,
@@ -113,12 +107,16 @@ def run_mitmproxy():
         "--listen-host", "0.0.0.0",
         "--set", "block_global=false",
         "--set", f"confdir={CONF_DIR}",
-        # Add passthrough for sensitive servers to prevent SSL errors
+        "--set", "ssl_insecure=true",
+        "--set", "connection_strategy=lazy",
         "--ignore-hosts", r"login\.freefiremobile\.com",
         "--ignore-hosts", r"auth\.garena\.com",
-        "--ignore-hosts", r".*\.garena\.com",
-        # Uncomment the line below for even better SSL stealth (requires cert installation):
-        # "--set", "ssl_verify_upstream_trusted_ca={CERT_PATH}",
+        "--ignore-hosts", r"accounts\.garena\.com",
+        "--ignore-hosts", r"sso\.garena\.com",
+        "--ignore-hosts", r"cdn\.garena\.com",
+        "--ignore-hosts", r"shop\.garena\.com",
+        "--ignore-hosts", r"payment\.garena\.com",
+        "--ignore-hosts", r".*\.gstatic\.com",
     ]
 
     mitm_proc = subprocess.Popen(mitm_cmd)
