@@ -1,0 +1,96 @@
+{
+    "description": "Emulator-specific configuration for all supported emulators",
+    "emulators": {
+        "bluestacks": {
+            "enabled": true,
+            "spoof_level": "maximum",
+            "ssl_strict_bypass": true,
+            "extra_telemetry_block": true,
+            "notes": "BlueStacks has strongest emulator fingerprint, needs full spoofing"
+        },
+        "msi_app_player": {
+            "enabled": true,
+            "spoof_level": "maximum",
+            "ssl_strict_bypass": true,
+            "extra_telemetry_block": true,
+            "notes": "MSI App Player based on BlueStacks, same detection patterns"
+        },
+        "memu": {
+            "enabled": true,
+            "spoof_level": "high",
+            "ssl_strict_bypass": false,
+            "extra_telemetry_block": true,
+            "notes": "MEmu already works, protection enhanced for safety"
+        },
+        "ldplayer": {
+            "enabled": true,
+            "spoof_level": "high",
+            "ssl_strict_bypass": false,
+            "extra_telemetry_block": true,
+            "notes": "LD Player already works, protection enhanced for safety"
+        },
+        "gameloop": {
+            "enabled": true,
+            "spoof_level": "maximum",
+            "ssl_strict_bypass": true,
+            "extra_telemetry_block": true,
+            "notes": "Tencent GameLoop has unique fingerprint"
+        },
+        "nox": {
+            "enabled": true,
+            "spoof_level": "high",
+            "ssl_strict_bypass": false,
+            "extra_telemetry_block": true,
+            "notes": "Nox Player support"
+        }
+    },
+    "detection_endpoints_block": {
+        "enabled": true,
+        "patterns": [
+            "emulator_detect",
+            "emu_check",
+            "emu_verify",
+            "vm_detect",
+            "virtual_check",
+            "sandbox_check",
+            "device_fingerprint",
+            "environment_check",
+            "platform_check",
+            "hw_info",
+            "hardware_check",
+            "gpu_check",
+            "play_integrity",
+            "safetynet",
+            "attestation",
+            "device_attestation",
+            "integrity_check",
+            "anti_fraud",
+            "risk_check",
+            "trust_check",
+            "sensor_report",
+            "sensor_data",
+            "accelerometer",
+            "gyroscope",
+            "magnetometer",
+            "build_info",
+            "build_report",
+            "screen_info",
+            "display_check",
+            "sys_info",
+            "system_report"
+        ]
+    },
+    "ssl_config": {
+        "ignore_cert_errors": true,
+        "suppress_ssl_warnings": true,
+        "retry_on_ssl_error": true,
+        "max_ssl_retries": 3,
+        "ssl_error_passthrough": true,
+        "notes": "Prevents SSL errors and data connection errors on all emulators"
+    },
+    "ff_version": {
+        "recommended": "Free Fire MAX (latest OB build)",
+        "reason": "FF MAX has slightly slower emulator detection than original FF",
+        "notes": "Always use latest version from Play Store for best compatibility"
+    }
+}
