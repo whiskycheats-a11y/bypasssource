@@ -8,29 +8,50 @@
         "log_detections": true,
         "auto_whitelist_on_login": true
     },
+    "emulator_protection": {
+        "enabled": true,
+        "spoof_all_emulators": true,
+        "block_emulator_detection_endpoints": true,
+        "scrub_emulator_markers_from_body": true,
+        "rotate_fingerprint_interval_seconds": 300
+    },
     "servers": {
         "ind": {
             "enabled": true,
             "extra_protection": true,
-            "reason": "Indian server has strongest detection"
+            "block_emulator_telemetry": true,
+            "block_3sec_elimination_trigger": true,
+            "reason": "Indian server has strongest detection - full emulator spoofing required"
         },
-        "na": {"enabled": true, "extra_protection": false},
-        "europe": {"enabled": true, "extra_protection": false},
-        "br": {"enabled": true, "extra_protection": false},
-        "sg": {"enabled": true, "extra_protection": false},
-        "th": {"enabled": true, "extra_protection": false},
-        "vn": {"enabled": true, "extra_protection": false},
-        "me": {"enabled": true, "extra_protection": false},
-        "ru": {"enabled": true, "extra_protection": false},
-        "sac": {"enabled": true, "extra_protection": false},
-        "pk": {"enabled": true, "extra_protection": false},
-        "bd": {"enabled": true, "extra_protection": false},
-        "id": {"enabled": true, "extra_protection": false},
-        "us": {"enabled": true, "extra_protection": false}
+        "na": {"enabled": true, "extra_protection": true, "block_emulator_telemetry": true},
+        "europe": {"enabled": true, "extra_protection": true, "block_emulator_telemetry": true},
+        "br": {"enabled": true, "extra_protection": true, "block_emulator_telemetry": true},
+        "sg": {"enabled": true, "extra_protection": true, "block_emulator_telemetry": true},
+        "th": {"enabled": true, "extra_protection": true, "block_emulator_telemetry": true},
+        "vn": {"enabled": true, "extra_protection": true, "block_emulator_telemetry": true},
+        "me": {"enabled": true, "extra_protection": true, "block_emulator_telemetry": true},
+        "ru": {"enabled": true, "extra_protection": true, "block_emulator_telemetry": true},
+        "sac": {"enabled": true, "extra_protection": true, "block_emulator_telemetry": true},
+        "pk": {"enabled": true, "extra_protection": true, "block_emulator_telemetry": true},
+        "bd": {"enabled": true, "extra_protection": true, "block_emulator_telemetry": true},
+        "id": {"enabled": true, "extra_protection": true, "block_emulator_telemetry": true},
+        "us": {"enabled": true, "extra_protection": true, "block_emulator_telemetry": true}
+    },
+    "india_server_extra": {
+        "block_device_report": true,
+        "block_environment_check": true,
+        "block_emulator_fingerprint": true,
+        "block_sensor_telemetry": true,
+        "block_gpu_check": true,
+        "block_play_integrity": true,
+        "delay_login_response_ms": 0,
+        "notes": "India server specific blocks to prevent 3-second elimination on BlueStacks/MSI"
     },
     "notes": [
         "ultra_safe_mode=true: Only modifies explicitly safe endpoints",
         "block_all_ranked=true: Never modifies ranked match requests",
-        "This prevents blacklisting on ALL servers"
+        "emulator_protection=true: Spoofs emulator fingerprints on all servers",
+        "All servers now have extra_protection and emulator telemetry blocking enabled",
+        "India server has additional blocks for 3-second elimination prevention"
     ]
 }
