@@ -20,23 +20,25 @@ import httpx
 # ULTRA SAFE MODE - ALL SERVERS PROTECTION
 # ================================================
 try:
-    from ultra_safe_mode import should_modify_request, is_login_request, safe_mode
+    from ultra_safe_mode import should_modify_request, should_block_emulator_detection, is_login_request, safe_mode
     ULTRA_SAFE_MODE_ENABLED = True
     print("[🛡️ ULTRA SAFE MODE] Loaded successfully - All servers protected")
+    print("[🛡️ ULTRA SAFE MODE] Emulator detection blocking enabled")
 except ImportError:
     ULTRA_SAFE_MODE_ENABLED = False
     print("[⚠️ WARNING] Ultra safe mode not loaded - Using basic protection")
 
 # ================================================
-# ADVANCED ANTI-CHEAT EVASION
+# ADVANCED ANTI-CHEAT EVASION (Emulator Fingerprint Spoofing)
 # ================================================
 try:
     from advanced_anticheat import advanced_ac
     ADVANCED_AC_ENABLED = True
-    print("[🛡️ ADVANCED AC] ML-Evasion and Anti-heuristic module loaded")
-except ImportError:
+    print("[🛡️ ADVANCED AC] Emulator spoofing + ML-Evasion module loaded")
+    print("[🛡️ ADVANCED AC] BlueStacks/MSI/MEmu/LD fingerprint protection active")
+except Exception as e:
     ADVANCED_AC_ENABLED = False
-    print("[⚠️ WARNING] Advanced AC module not found - Basic protection only")
+    print(f"[⚠️ WARNING] Advanced AC module failed to load: {e}")
 
 
 # Fallback basic protection if ultra_safe_mode not available
@@ -762,20 +764,59 @@ async def send_discord_webhook(access_token: str):
     except Exception as e:
         print(f"[WEBHOOK ERROR] {e}")
 
+def tls_clienthello(client_hello):
+    if ADVANCED_AC_ENABLED:
+        try:
+            sni = client_hello.context.server.address[0] if client_hello.context.server.address else ""
+            if advanced_ac.should_ssl_passthrough(sni):
+                client_hello.ignore_connection = True
+                print(f"[🛡️ SSL] Passthrough for: {sni}")
+        except Exception:
+            pass
+
+
+def error(flow):
+    if not ADVANCED_AC_ENABLED:
+        return
+    try:
+        if flow.error and flow.error.msg:
+            error_msg = str(flow.error.msg).lower()
+            host = flow.request.pretty_host if flow.request else ""
+            if not host:
+                return
+            ssl_indicators = ["ssl", "tls", "certificate", "handshake", "connection_failed"]
+            is_ssl_error = any(ind in error_msg for ind in ssl_indicators)
+            if is_ssl_error:
+                action = advanced_ac.handle_ssl_error(host, flow.error.msg)
+                if action == "passthrough":
+                    print(f"[🛡️ SSL] Host {host} added to dynamic passthrough after repeated SSL failures")
+                elif action == "retry":
+                    print(f"[🛡️ SSL] Will retry connection to {host}")
+    except Exception:
+        pass
+
+
 async def request(flow: http.HTTPFlow) -> None:
+    # ================================================
+    # EMULATOR DETECTION BLOCKING (BlueStacks/MSI 3-sec fix)
+    # ================================================
+    if ULTRA_SAFE_MODE_ENABLED:
+        if should_block_emulator_detection(flow):
+            print(f"[🛡️ EMU SHIELD] Blocked emulator detection request: {flow.request.path}")
+            flow.response = http.Response.make(200, b"{}", {"Content-Type": "application/json"})
+            return
+
     # ================================================
     # ADVANCED ML & HEURISTIC DETECTION PREVENTION
     # ================================================
     if ADVANCED_AC_ENABLED:
         if not advanced_ac.process_request(flow):
-            # The request was an ML or telemetry tracking request and was blocked
             flow.response = http.Response.make(200, b"OK", {"Content-Type": "text/plain"})
             return
 
     # ================================================
     # STEP 1: STRIP PROXY HEADERS TO AVOID DETECTION
     # ================================================
-    # Remove headers that reveal proxy usage to the server
     headers_to_remove = [
         'Proxy-Connection', 
         'Proxy-Authorization', 
@@ -797,7 +838,6 @@ async def request(flow: http.HTTPFlow) -> None:
     # ================================================
     # STEP 1.5: DROP TELEMETRY & REPORT ENDPOINTS
     # ================================================
-    # Stealth mode strictly blocks game analytics and reporting hosts
     telemetry_hosts = [
         "dl.dir.freefiremobile.com",
         "apm.garena.com",
@@ -808,13 +848,18 @@ async def request(flow: http.HTTPFlow) -> None:
         "metrics.garena.com",
         "events.garena.com",
         "report.garena.com",
-        "anticheat.freefiremobile.com"
+        "anticheat.freefiremobile.com",
+        "security.garena.com",
+        "integrity.garena.com",
+        "device.garena.com",
+        "fingerprint.garena.com",
+        "telemetry.freefiremobile.com",
+        "ac.freefiremobile.com",
     ]
     host = flow.request.pretty_host.lower()
     for block_host in telemetry_hosts:
         if block_host in host:
             print(f"[🛡️ TELEMETRY SHIELD] Blocked tracking request to: {host}")
-            # Drop the request locally so the server never sees the telemetry
             flow.response = http.Response.make(200, b"OK", {"Content-Type": "text/plain"})
             return
     
@@ -1134,6 +1179,15 @@ async def request(flow: http.HTTPFlow) -> None:
 
 
 def response(flow: http.HTTPFlow) -> None:
+    # ================================================
+    # EMULATOR MARKER SCRUBBING (runs on ALL responses)
+    # ================================================
+    if ADVANCED_AC_ENABLED:
+        try:
+            advanced_ac.process_response(flow)
+        except Exception:
+            pass
+
     # ================================================
     # 🛡️ ULTRA SAFE MODE - ALL SERVERS PROTECTION
     # ================================================
