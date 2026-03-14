@@ -2,6 +2,7 @@
 ULTRA SAFE MODE - ALL SERVERS PROTECTION
 Prevents blacklisting on ALL servers during ranked matches
 Works for: IND, NA, EU, BR, SG, TH, VN, ME, RU, SAC, PK, BD, ID
+Includes emulator protection for BlueStacks, MSI, MEmu, LD Player
 """
 
 import time
@@ -34,7 +35,15 @@ RANKED_ENDPOINTS = [
     
     # Anti-Cheat Related (NEVER MODIFY!)
     "/AntiCheat", "/SecurityCheck", "/IntegrityCheck", "/ValidationCheck",
-    "/VerifyClient", "/ClientValidation", "/SecurityValidation"
+    "/VerifyClient", "/ClientValidation", "/SecurityValidation",
+
+    # Emulator/Device Detection (BLOCK these - they trigger 3-sec elimination)
+    "/DeviceCheck", "/EmulatorCheck", "/EnvironmentCheck",
+    "/PlatformValidation", "/DeviceIntegrity", "/HardwareCheck",
+    "/SensorValidation", "/GPUValidation", "/DeviceReport",
+    "/ClientEnvironment", "/DeviceFingerprint", "/VMDetection",
+    "/SandboxCheck", "/PlayIntegrity", "/SafetyNet",
+    "/DeviceAttestation", "/TrustCheck", "/RiskAssessment",
 ]
 
 # Keywords that indicate ranked match activity
@@ -42,7 +51,18 @@ RANKED_KEYWORDS = [
     "ranked", "rank", "tier", "rating", "matchstart", "battleroyale",
     "entermatch", "rankedgame", "csranked", "playereliminated",
     "matchupdate", "elimination", "anticheat", "security", "integrity",
-    "validation", "verify", "check"
+    "validation", "verify", "check",
+]
+
+# Keywords for emulator detection (block these silently)
+EMULATOR_DETECTION_KEYWORDS = [
+    "emulator", "emu_check", "vm_detect", "virtual", "sandbox",
+    "device_fingerprint", "device_check", "hardware_check",
+    "gpu_check", "sensor_report", "environment_check",
+    "platform_check", "play_integrity", "safetynet",
+    "attestation", "device_report", "build_info",
+    "sys_info", "screen_info", "accelerometer",
+    "gyroscope", "magnetometer",
 ]
 
 # Safe endpoints - These can be modified without risk
@@ -61,6 +81,7 @@ class SafeModeManager:
         self.last_ranked_detection = 0
         self.ranked_match_count = 0
         self.blocked_modifications = 0
+        self.india_extra = {}
         self.load_config()
     
     def load_config(self):
@@ -79,6 +100,12 @@ class SafeModeManager:
                     "log_detections": True
                 }
                 self.save_config()
+            self.india_extra = self.config.get("india_server_extra", {})
+            emu_prot = self.config.get("emulator_protection", {})
+            if emu_prot.get("enabled", False):
+                print("[🛡️ SAFE MODE] Emulator protection enabled from config")
+                if emu_prot.get("block_emulator_detection_endpoints", False):
+                    print("[🛡️ SAFE MODE] Emulator detection endpoint blocking active")
         except Exception as e:
             print(f"[Safe Mode] Error loading config: {e}")
             self.config = {"ultra_safe_mode": True}
@@ -91,6 +118,60 @@ class SafeModeManager:
         except Exception as e:
             print(f"[Safe Mode] Error saving config: {e}")
     
+    def is_emulator_detection_request(self, path: str) -> bool:
+        """
+        Check if request is an emulator/device detection request.
+        These trigger the 3-second elimination on BlueStacks/MSI.
+        Returns True if this is a detection request that should be blocked.
+        """
+        path_lower = path.lower()
+
+        for keyword in EMULATOR_DETECTION_KEYWORDS:
+            if keyword in path_lower:
+                self.log_detection(path, f"Emulator detection blocked: {keyword}")
+                return True
+
+        normalized = path_lower.replace("/", "").replace("-", "").replace("_", "")
+        emu_normalized = [
+            "devicecheck", "emulatorcheck", "environmentcheck",
+            "hardwarecheck", "gpucheck", "sensorcheck",
+            "platformcheck", "vmdetection", "sandboxcheck",
+            "playintegrity", "safetynet", "deviceattestation",
+            "trustcheck", "riskcheck", "devicereport",
+            "devicefingerprint", "sensorvalidation", "gpuvalidation",
+            "deviceintegrity", "clientenvironment", "riskassessment",
+        ]
+        for term in emu_normalized:
+            if term in normalized:
+                self.log_detection(path, f"Emulator detection (normalized) blocked: {term}")
+                return True
+
+        if self.india_extra:
+            india_checks = []
+            if self.india_extra.get("block_device_report", False):
+                india_checks.append("devicereport")
+            if self.india_extra.get("block_environment_check", False):
+                india_checks.append("environmentcheck")
+                india_checks.append("envcheck")
+            if self.india_extra.get("block_emulator_fingerprint", False):
+                india_checks.append("emulatorfingerprint")
+                india_checks.append("emufingerprint")
+            if self.india_extra.get("block_sensor_telemetry", False):
+                india_checks.append("sensortelemetry")
+                india_checks.append("sensorlog")
+            if self.india_extra.get("block_gpu_check", False):
+                india_checks.append("gpureport")
+                india_checks.append("gpuinfo")
+            if self.india_extra.get("block_play_integrity", False):
+                india_checks.append("integritytoken")
+                india_checks.append("integrityverdict")
+            for term in india_checks:
+                if term in normalized:
+                    self.log_detection(path, f"India server extra block: {term}")
+                    return True
+
+        return False
+
     def is_ranked_match(self, path: str) -> bool:
         """
         Comprehensive check if request is ranked match related.
@@ -186,6 +267,18 @@ def should_modify_request(flow) -> bool:
     
     return True
 
+def should_block_emulator_detection(flow) -> bool:
+    """
+    Check if this request is an emulator detection request.
+    These are the requests that trigger 3-second elimination on BlueStacks/MSI.
+    
+    Returns:
+        True: This is an emulator detection request - BLOCK IT
+        False: Normal request - let it through
+    """
+    path = flow.request.path
+    return safe_mode.is_emulator_detection_request(path)
+
 def is_login_request(path: str) -> bool:
     """Check if request is login-related (usually safe to modify)"""
     login_keywords = ["login", "majorlogin", "getaccountinfo"]
@@ -198,24 +291,3 @@ def is_login_request(path: str) -> bool:
                 return True
     
     return False
-
-# ================================================
-# USAGE EXAMPLE
-# ================================================
-"""
-In mitmproxyutils.py, use like this:
-
-from ultra_safe_mode import should_modify_request, is_login_request, safe_mode
-
-def response(flow: http.HTTPFlow) -> None:
-    # CRITICAL CHECK - Always do this first
-    if not should_modify_request(flow):
-        return  # Exit immediately - don't modify anything
-    
-    # Now safe to proceed with modifications
-    if is_login_request(flow.request.path):
-        # Handle login modifications
-        pass
-    
-    # Your other modification code...
-"""
