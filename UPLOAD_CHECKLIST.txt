@@ -1,0 +1,179 @@
+═══════════════════════════════════════════════════════════════
+🚀 VEXANODE UPLOAD CHECKLIST
+═══════════════════════════════════════════════════════════════
+
+📦 STEP 1: FILES TO UPLOAD
+═══════════════════════════════════════════════════════════════
+
+✅ CORE FILES (MUST UPLOAD):
+  [ ] main.py
+  [ ] mitmproxyutils.py
+  [ ] ultra_safe_mode.py
+  [ ] requirements.txt
+  [ ] whitelist.json
+  [ ] safe_mode_config.json
+  [ ] bot_config.json
+
+✅ NEW METHODS (RECOMMENDED):
+  [ ] method2_socks_proxy.py ⭐ (BEST)
+  [ ] method4_dns_hijack.py ⭐⭐ (MOST STEALTH)
+  [ ] method3_vpn_tunnel.py
+  [ ] transparent_proxy.py
+  [ ] ultimate_launcher.py
+
+✅ FOLDERS (UPLOAD COMPLETE):
+  [ ] crypto/ (encryption_utils.py, __init__.py)
+  [ ] protocols/ (protobuf_utils.py, __init__.py)
+  [ ] certs/ (all certificate files)
+  [ ] access_jwt/ (if exists)
+
+✅ WHITELIST FILES:
+  [ ] whitelist_*.json (all region files)
+  [ ] token_*.json (all region files)
+
+✅ DOCUMENTATION (OPTIONAL):
+  [ ] VEXANODE_SETUP.md
+  [ ] ULTIMATE_SAFE_METHOD.md
+  [ ] QUICK_START_HINDI.md
+  [ ] START_HERE.md
+
+═══════════════════════════════════════════════════════════════
+🚀 STEP 2: UPLOAD KAISE KARE
+═══════════════════════════════════════════════════════════════
+
+OPTION A: DIRECT UPLOAD
+  1. VexaNode File Manager kholo
+  2. All files select karo
+  3. Upload button click karo
+  4. Wait for complete
+
+OPTION B: ZIP UPLOAD (FASTER)
+  1. All files ko ZIP mein compress karo
+  2. ZIP file upload karo VexaNode pe
+  3. Extract karo server pe
+  4. Done!
+
+═══════════════════════════════════════════════════════════════
+🚀 STEP 3: SERVER START KARO
+═══════════════════════════════════════════════════════════════
+
+RECOMMENDED METHOD (SOCKS5):
+  Command: python method2_socks_proxy.py
+  Port: 1080
+  Type: SOCKS5
+  
+  Device Setup:
+    Proxy Type: SOCKS5
+    Host: <vexanode_ip>
+    Port: 1080
+
+ALTERNATIVE (DNS HIJACK - MOST STEALTH):
+  Command: sudo python method4_dns_hijack.py
+  Port: 53 (DNS), 8888 (HTTP)
+  
+  Device Setup:
+    DNS: <vexanode_ip>
+    No proxy needed!
+
+ORIGINAL METHOD:
+  Command: python main.py
+  Port: 2130
+  Type: HTTP/HTTPS
+  
+  Device Setup:
+    Proxy Type: HTTP
+    Host: <vexanode_ip>
+    Port: 2130
+
+═══════════════════════════════════════════════════════════════
+🔥 STEP 4: FIREWALL CONFIGURE KARO
+═══════════════════════════════════════════════════════════════
+
+VexaNode Panel > Network > Firewall
+
+FOR METHOD 2 (SOCKS5):
+  [ ] Allow Port 1080 (TCP)
+
+FOR METHOD 3 (DNS):
+  [ ] Allow Port 53 (UDP)
+  [ ] Allow Port 8888 (TCP)
+
+FOR ORIGINAL:
+  [ ] Allow Port 2130 (TCP)
+  [ ] Allow Port 6008 (TCP)
+
+═══════════════════════════════════════════════════════════════
+📱 STEP 5: DEVICE CONFIGURE KARO
+═══════════════════════════════════════════════════════════════
+
+ANDROID (SOCKS5):
+  WiFi Settings > Modify Network > Proxy Manual
+  Type: SOCKS5 (or HTTP)
+  Host: <vexanode_ip>
+  Port: 1080
+
+ANDROID (DNS):
+  WiFi Settings > Modify Network > IP Static
+  DNS 1: <vexanode_ip>
+  DNS 2: 8.8.8.8
+
+PC/EMULATOR:
+  System Settings > Network > Proxy/DNS
+  Configure accordingly
+
+═══════════════════════════════════════════════════════════════
+✅ STEP 6: TEST KARO
+═══════════════════════════════════════════════════════════════
+
+[ ] Server running check karo (VexaNode console)
+[ ] Port listening check karo
+[ ] Device se connect karo
+[ ] Browser test karo (koi website kholo)
+[ ] Free Fire login test karo
+[ ] Ranked match test karo (test account pe!)
+
+═══════════════════════════════════════════════════════════════
+🎯 EXPECTED RESULTS
+═══════════════════════════════════════════════════════════════
+
+SERVER CONSOLE:
+  [SOCKS5] Proxy listening on 0.0.0.0:1080
+  [PROXY] Login request detected
+  [DIRECT] Ranked traffic - Bypassing proxy
+
+DEVICE:
+  Login: UID bypass works ✅
+  Ranked: No modifications ✅
+  Blacklist: Won't happen ✅
+
+═══════════════════════════════════════════════════════════════
+🚨 IMPORTANT NOTES
+═══════════════════════════════════════════════════════════════
+
+⚠️  TEST ACCOUNT PE PEHLE TEST KARO!
+⚠️  MAIN ACCOUNT RISK MAT LO!
+⚠️  TERMINAL OUTPUT MONITOR KARO!
+⚠️  METHOD 2 (SOCKS5) RECOMMENDED HAI!
+
+═══════════════════════════════════════════════════════════════
+📞 QUICK COMMANDS
+═══════════════════════════════════════════════════════════════
+
+Start Server:
+  python method2_socks_proxy.py
+
+Stop Server:
+  Ctrl+C or pkill -f python
+
+Check Status:
+  ps aux | grep python
+  netstat -tulpn | grep 1080
+
+View Logs:
+  tail -f logfile (if logging enabled)
+
+═══════════════════════════════════════════════════════════════
+🎉 ALL SET! UPLOAD KARO AUR START KARO!
+═══════════════════════════════════════════════════════════════
+
+Recommended: Method 2 (SOCKS5) - Easiest + Safest! 🚀

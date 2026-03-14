@@ -1,0 +1,32 @@
+{
+    "safe_mode": true,
+    "ranked_match_protection": {
+        "enabled": true,
+        "auto_whitelist_on_login": true,
+        "bypass_elimination_check": false,
+        "stealth_mode": true
+    },
+    "regions": {
+        "ind": {
+            "enabled": true,
+            "auto_add_to_whitelist": true,
+            "duration_days": 365
+        },
+        "na": {
+            "enabled": true,
+            "auto_add_to_whitelist": true,
+            "duration_days": 365
+        },
+        "europe": {
+            "enabled": true,
+            "auto_add_to_whitelist": true,
+            "duration_days": 365
+        }
+    },
+    "anti_detection": {
+        "randomize_timing": true,
+        "use_legitimate_headers": true,
+        "avoid_suspicious_patterns": true
+    },
+    "notes": "Configuration for safe ranked match gameplay. Keep safe_mode enabled to prevent blacklisting."
+}

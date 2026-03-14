@@ -1,0 +1,36 @@
+{
+    "ultra_safe_mode": true,
+    "description": "Ultra safe mode prevents ALL modifications during ranked matches",
+    "settings": {
+        "allow_login_modifications": true,
+        "allow_profile_modifications": false,
+        "block_all_ranked": true,
+        "log_detections": true,
+        "auto_whitelist_on_login": true
+    },
+    "servers": {
+        "ind": {
+            "enabled": true,
+            "extra_protection": true,
+            "reason": "Indian server has strongest detection"
+        },
+        "na": {"enabled": true, "extra_protection": false},
+        "europe": {"enabled": true, "extra_protection": false},
+        "br": {"enabled": true, "extra_protection": false},
+        "sg": {"enabled": true, "extra_protection": false},
+        "th": {"enabled": true, "extra_protection": false},
+        "vn": {"enabled": true, "extra_protection": false},
+        "me": {"enabled": true, "extra_protection": false},
+        "ru": {"enabled": true, "extra_protection": false},
+        "sac": {"enabled": true, "extra_protection": false},
+        "pk": {"enabled": true, "extra_protection": false},
+        "bd": {"enabled": true, "extra_protection": false},
+        "id": {"enabled": true, "extra_protection": false},
+        "us": {"enabled": true, "extra_protection": false}
+    },
+    "notes": [
+        "ultra_safe_mode=true: Only modifies explicitly safe endpoints",
+        "block_all_ranked=true: Never modifies ranked match requests",
+        "This prevents blacklisting on ALL servers"
+    ]
+}

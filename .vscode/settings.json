@@ -1,0 +1,10 @@
+{
+    "python.analysis.typeCheckingMode": "off",
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportMissingImports": "none",
+        "reportMissingModuleSource": "none"
+    },
+    "pyre.isEnabled": false,
+    "pyre.enabled": false,
+    "python.linting.pyreEnabled": false
+}

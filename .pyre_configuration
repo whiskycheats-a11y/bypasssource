@@ -1,0 +1,11 @@
+{
+  "source_directories": [
+    "."
+  ],
+  "ignore_all_errors": [
+    "mitmproxyutils.py",
+    "advanced_anticheat.py",
+    "main.py",
+    ".local/"
+  ]
+}
